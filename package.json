@@ -1,0 +1,36 @@
+{
+  "name": "crypto-k",
+  "version": "6.0.0",
+  "description": "input-output-hk/cardano-crypto compiled to pure javascript using Emscripten",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "prepublish": "npm run build",
+    "test": "tape test/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cristian-sima/crypto-k"
+  },
+  "keywords": [
+    "ed25519",
+    "cardano",
+    "signature"
+  ],
+  "author": "refi93",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cristian-sima/crypto-k/issues"
+  },
+  "homepage": "https://github.com/cristian-sima/crypto-k#readme",
+  "devDependencies": {
+    "tape": "^4.11.0"
+  },
+  "dependencies": {
+    "bech32": "^1.1.4",
+    "bip39": "^3.0.2",
+    "borc": "^2.1.1",
+    "buffer": "^6.0.3",
+    "pbkdf2": "^3.0.17"
+  }
+}

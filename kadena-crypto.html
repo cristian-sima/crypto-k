@@ -1,0 +1,55 @@
+<html>
+<head>
+  <script src="kadena-crypto.js"></script>
+</head>
+<body>
+  <h1>Kadena Test</h1>
+  <button id="register" onclick="onRegister()">Register</button>
+  <button id="login" onclick="onLogin()">Login</button>
+  <script>
+    const recovery = lib.kadenaGenMnemonic()
+    console.log(recovery)
+
+    console.log("Is valid mnemonic (expecting 'true'): ", lib.kadenaCheckMnemonic(recovery));
+    console.log("Is valid mnemonic (expecting 'false'): ", lib.kadenaCheckMnemonic(recovery.substring(0, recovery.lastIndexOf(" "))));
+    
+
+    const sampleHardenedIndex = 0x80000000
+    const index = 0x00
+    const pwd = "my-pwd"
+    const newPwd = "my-new-pwd"
+    var root = lib.kadenaMnemonicToRootKeypair(pwd, recovery);
+    console.log(root.toString('hex'))
+
+    // I'd print out the hex forms here but apparently there isn't a trivial way 
+    // to convert ArrayBuffers or Uint8Array to hex strings on the browser?!
+    // Buffer offers this, and our underying nodejs code uses Buffer, but then
+    // it gets browserified and we don't expose it in the api
+    const [xprvRaw, xpubRaw] = lib.kadenaGenKeypair(pwd, root, sampleHardenedIndex | index)
+
+    const xprv = new Uint8Array(xprvRaw)
+    const xpub = new Uint8Array(xpubRaw)
+
+    // test signature 
+    var msg = 'hello there'
+    var sig = lib.kadenaSign(pwd, msg, xprv)
+    console.log(lib.kadenaVerify(msg, xpub, sig))
+
+    // Make sure verification fails on a diff messgage
+    var msg2 = "not hello there"
+    console.log(lib.kadenaVerify(msg2, xpub, sig))
+
+    // Switch to a new password for the root key
+    const newRoot = lib.kadenaChangePassword(root, pwd, newPwd)
+    const [xprvRawNew, xpubRawNew] = lib.kadenaGenKeypair(newPwd, newRoot, sampleHardenedIndex | index)
+
+    const xprvNew = new Uint8Array(xprvRawNew)
+    const xpubNew = new Uint8Array(xpubRawNew)
+
+    var sigNew = lib.kadenaSign(newPwd, msg, xprvNew)
+    console.log("Use new xpub to confirm new sig", lib.kadenaVerify(msg, xpubNew, sigNew))
+    console.log("Use old xpub to confirm new sig", lib.kadenaVerify(msg, xpub, sigNew))
+
+  </script>
+</body>
+</html>
